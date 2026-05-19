@@ -1,0 +1,8 @@
+node_modules
+
+.tanstack
+.env
+.DS_Store
+
+dist
+.output
