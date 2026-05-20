@@ -5,6 +5,9 @@ import { TanStackDevtools } from '@tanstack/react-devtools';
 import { Header } from '../components/header';
 import appCss from '../styles.css?url';
 
+import '@/lib/i18n/i18n.config';
+import { DEFAULT_LOCALE } from '@/lib/i18n';
+
 export const Route = createRootRoute({
   head: () => ({
     meta: [
@@ -24,7 +27,7 @@ export const Route = createRootRoute({
 
 function RootDocument({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="fr">
+    <html lang={DEFAULT_LOCALE}>
       <head>
         <HeadContent />
       </head>

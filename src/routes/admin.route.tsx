@@ -1,3 +1,4 @@
+import { useTranslation } from '@/lib/i18n';
 import { createFileRoute } from '@tanstack/react-router';
 
 export const Route = createFileRoute('/admin')({
@@ -5,5 +6,8 @@ export const Route = createFileRoute('/admin')({
 });
 
 function RouteComponent() {
-  return <div className="flex min-h-[calc(100svh-3.5rem)] p-6">admin</div>;
+  const t = useTranslation();
+  return (
+    <div className="flex min-h-[calc(100svh-3.5rem)] p-6">{t('admin')}</div>
+  );
 }

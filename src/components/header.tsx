@@ -1,12 +1,19 @@
 import { Link } from '@tanstack/react-router';
 
+import { LangSelect } from './lang-select';
+import { useTranslation } from '@/lib/i18n';
+
 export const Header = () => {
+  const t = useTranslation();
+
   return (
-    <header className="border-border bg-background/95 supports-backdrop-filter:bg-background/60 sticky top-0 z-50 border-b backdrop-blur">
-      <nav className="mx-auto flex h-14 max-w-5xl items-center gap-2 px-4">
-        <HeaderLink to="/">Home</HeaderLink>
-        <HeaderLink to="/admin">Admin</HeaderLink>
+    <header className="border-border bg-background/95 supports-backdrop-filter:bg-background/60 sticky top-0 z-50 border-b backdrop-blur flex justify-between items-center px-4">
+      <nav className="flex h-14 items-center justify-center gap-2">
+        <HeaderLink to="/">{t('home')}</HeaderLink>
+        <HeaderLink to="/admin">{t('admin')}</HeaderLink>
       </nav>
+
+      <LangSelect />
     </header>
   );
 };
