@@ -6,3 +6,7 @@ node_modules
 
 dist
 .output
+
+.agents
+
+yt-logic.md
