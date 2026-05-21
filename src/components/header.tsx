@@ -1,6 +1,6 @@
 import { Link } from '@tanstack/react-router';
 
-import { LangSelect } from './lang-select';
+import { LangSelect } from './langSelect';
 import { useTranslation } from '@/lib/i18n';
 
 export const Header = () => {

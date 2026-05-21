@@ -2,11 +2,12 @@ import { HeadContent, Scripts, createRootRoute } from '@tanstack/react-router';
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools';
 import { TanStackDevtools } from '@tanstack/react-devtools';
 
-import { Header } from '../components/header';
 import appCss from '../styles.css?url';
 
 import '@/lib/i18n/i18n.config';
 import { DEFAULT_LOCALE } from '@/lib/i18n';
+import { Header } from '@/components/header';
+import { TooltipProvider } from '@/components/ui/tooltip';
 
 export const Route = createRootRoute({
   head: () => ({
@@ -32,8 +33,11 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <HeadContent />
       </head>
       <body>
-        <Header />
-        {children}
+        <TooltipProvider>
+          <Header />
+          {children}
+        </TooltipProvider>
+
         <TanStackDevtools
           config={{ position: 'bottom-right' }}
           plugins={[
