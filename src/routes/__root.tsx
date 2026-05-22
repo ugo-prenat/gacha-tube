@@ -6,7 +6,8 @@ import appCss from '../styles.css?url';
 
 import '@/lib/i18n/i18n.config';
 import { DEFAULT_LOCALE } from '@/lib/i18n';
-import { Header } from '@/components/header';
+import { Header } from '@/components/Header';
+import { ThemeProvider } from '@/lib/theme/theme.provider';
 import { TooltipProvider } from '@/components/ui/tooltip';
 
 export const Route = createRootRoute({
@@ -28,15 +29,17 @@ export const Route = createRootRoute({
 
 function RootDocument({ children }: { children: React.ReactNode }) {
   return (
-    <html lang={DEFAULT_LOCALE}>
+    <html lang={DEFAULT_LOCALE} suppressHydrationWarning>
       <head>
         <HeadContent />
       </head>
       <body>
-        <TooltipProvider>
-          <Header />
-          {children}
-        </TooltipProvider>
+        <ThemeProvider>
+          <TooltipProvider>
+            <Header />
+            {children}
+          </TooltipProvider>
+        </ThemeProvider>
 
         <TanStackDevtools
           config={{ position: 'bottom-right' }}

@@ -1,6 +1,7 @@
 import { Link } from '@tanstack/react-router';
 
-import { LangSelect } from './langSelect';
+import { LangSelect } from '../lib/i18n/components/LangSelect';
+import { ThemeToggle } from '../lib/theme/components/ThemeToggle';
 import { useTranslation } from '@/lib/i18n';
 
 export const Header = () => {
@@ -13,7 +14,10 @@ export const Header = () => {
         <HeaderLink to="/admin">{t('admin')}</HeaderLink>
       </nav>
 
-      <LangSelect />
+      <div className="flex items-center gap-2">
+        <LangSelect />
+        <ThemeToggle />
+      </div>
     </header>
   );
 };
