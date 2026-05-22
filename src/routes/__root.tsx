@@ -5,7 +5,7 @@ import { TanStackDevtools } from '@tanstack/react-devtools';
 import appCss from '../styles.css?url';
 
 import '@/lib/i18n/i18n.config';
-import { DEFAULT_LOCALE } from '@/lib/i18n';
+import { DEFAULT_LOCALE, LangProvider } from '@/lib/i18n';
 import { Header } from '@/components/Header';
 import { ThemeProvider } from '@/lib/theme/theme.provider';
 import { TooltipProvider } from '@/components/ui/tooltip';
@@ -34,12 +34,14 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <HeadContent />
       </head>
       <body>
-        <ThemeProvider>
-          <TooltipProvider>
-            <Header />
-            {children}
-          </TooltipProvider>
-        </ThemeProvider>
+        <LangProvider>
+          <ThemeProvider>
+            <TooltipProvider>
+              <Header />
+              {children}
+            </TooltipProvider>
+          </ThemeProvider>
+        </LangProvider>
 
         <TanStackDevtools
           config={{ position: 'bottom-right' }}

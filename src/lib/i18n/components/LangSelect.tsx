@@ -1,8 +1,15 @@
-import { LOCALES, useLang, useTranslation } from '@/lib/i18n';
 import { useHotkey } from '@tanstack/react-hotkeys';
-import { SelectTrigger, SelectValue } from '../../../components/ui/select';
-import { Select, SelectGroup, SelectItem } from '../../../components/ui/select';
-import { SelectContent } from '../../../components/ui/select';
+
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '../../../components/ui/select';
+import type { Locale } from '@/lib/i18n';
+import { LOCALES, useLang, useTranslation } from '@/lib/i18n';
 
 export const LangSelect = () => {
   const t = useTranslation();
@@ -14,7 +21,7 @@ export const LangSelect = () => {
   });
 
   return (
-    <Select value={lang}>
+    <Select value={lang} onValueChange={(value) => void setLang(value as Locale)}>
       <SelectTrigger>
         <SelectValue placeholder={t('lang')} />
       </SelectTrigger>
