@@ -1,7 +1,3 @@
-export const YOUTUBE_BASE_API_URL = 'https://youtube.googleapis.com/youtube/v3';
-export const YOUTUBE_REGION_CODE_FR = 'fr';
-export const YOUTUBE_MAX_RESULTS_NB = 50;
-
 export type YoutubeResponse<T> = {
   items: T[];
   kind: string;
