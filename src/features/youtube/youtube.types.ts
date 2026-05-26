@@ -1,3 +1,5 @@
+import type { YOUTUBE_REGION_CODE_FR } from './youtube.constants';
+
 export type YoutubeResponse<T> = {
   items: T[];
   kind: string;
@@ -58,3 +60,20 @@ export type YoutubeThumbnailSize =
 export type YoutubeThumbnails = Partial<
   Record<YoutubeThumbnailSize, YoutubeThumbnail>
 >;
+
+export type YoutubePart = 'snippet' | 'statistics' | (string & {});
+
+export type YoutubeQueryParams = Partial<{
+  part: YoutubePart[];
+  maxResults: number;
+  chart: 'mostPopular' | (string & {});
+  regionCode: typeof YOUTUBE_REGION_CODE_FR;
+}>;
+
+export type YoutubeRefreshTokenResponse = {
+  access_token: string;
+  expires_in: number;
+  scope: string;
+  token_type: string;
+  refresh_token_expires_in: number;
+};

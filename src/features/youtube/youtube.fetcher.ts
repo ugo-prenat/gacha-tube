@@ -1,19 +1,50 @@
 import { Effect, Ref } from 'effect';
 import { YoutubeAccessTokenRef } from './youtube.service';
+import type {
+  YoutubeQueryParams,
+  YoutubeRefreshTokenResponse
+} from './youtube.types';
+import { buildYoutubeUrl } from './youtube.utils';
+import {
+  YoutubeAPIError,
+  YoutubeRefreshAccessTokenError,
+  YoutubeUnauthorizedError
+} from './youtube.errors';
+import { YOUTUBE_REFRESH_TOKEN_URL } from './youtube.constants';
 
-type Method = 'GET' | 'POST' | 'PUT' | 'DELETE';
+type Method = 'GET' | 'POST';
 
-const buildUrl = (url: string) => 'https://jsonplaceholder.typicode.com/todos';
-// const buildUrl = (url: string) => `${YOUTUBE_BASE_API_URL}${url}`;
+type Input = string | { method: Method; url: string; body?: Object };
 
 export const youtubeFetcher = <T>(
-  input: string | { method: Method; url: string; body?: Object }
+  input: Input,
+  queryParams?: YoutubeQueryParams
+) =>
+  performFetch<T>(input, queryParams).pipe(
+    Effect.catchTag('YoutubeUnauthorizedError', () =>
+      Effect.gen(function* () {
+        yield* Effect.log(
+          'Received 401 Unauthorized, refreshing access token...'
+        );
+        yield* refreshAccessToken;
+        return yield* performFetch<T>(input, queryParams, true);
+      })
+    )
+  );
+
+const performFetch = <T>(
+  input: Input,
+  queryParams?: YoutubeQueryParams,
+  fromRefreshToken = false
 ) =>
   Effect.gen(function* () {
     const accessTokenRef = yield* YoutubeAccessTokenRef;
     const accessToken = yield* Ref.get(accessTokenRef);
 
-    const url = buildUrl(typeof input === 'string' ? input : input.url);
+    const url = buildYoutubeUrl(
+      typeof input === 'string' ? input : input.url,
+      queryParams
+    );
 
     const props: RequestInit = {
       method: typeof input === 'string' ? 'GET' : input.method,
@@ -26,8 +57,50 @@ export const youtubeFetcher = <T>(
       }
     };
 
-    return yield* Effect.tryPromise({
-      try: () => fetch(url, props).then((res) => res.json() as Promise<T>),
-      catch: (error) => new Error(`Failed to fetch ${url}: ${error}`)
-    });
+    yield* Effect.log(`[YT FETCHER] ${props.method} ${url}`);
+    const response = yield* Effect.promise(() => fetch(url, props));
+
+    if (response.status === 401 && !fromRefreshToken)
+      return yield* Effect.fail(
+        new YoutubeUnauthorizedError({ error: response })
+      );
+
+    if (!response.ok)
+      return yield* Effect.fail(
+        new YoutubeAPIError({
+          endpoint: url,
+          error: response,
+          statusCode: response.status
+        })
+      );
+
+    const data = yield* Effect.promise(() => response.json() as Promise<T>);
+    return data;
   });
+
+const refreshAccessToken = Effect.gen(function* () {
+  const accessTokenRef = yield* YoutubeAccessTokenRef;
+
+  const response = yield* Effect.tryPromise({
+    try: () =>
+      fetch(YOUTUBE_REFRESH_TOKEN_URL, {
+        method: 'POST',
+        body: JSON.stringify({
+          grant_type: 'refresh_token',
+          client_id: process.env.YOUTUBE_CLIENT_ID,
+          client_secret: process.env.YOUTUBE_CLIENT_SECRET,
+          refresh_token: process.env.YOUTUBE_REFRESH_TOKEN
+        })
+      }),
+    catch: (error) => {
+      return new YoutubeRefreshAccessTokenError({ error });
+    }
+  });
+
+  const data = yield* Effect.promise(
+    () => response.json() as Promise<YoutubeRefreshTokenResponse>
+  );
+
+  yield* Ref.update(accessTokenRef, () => data.access_token);
+  yield* Effect.log('Access token refreshed');
+});
