@@ -1,10 +1,10 @@
 import { Context, Effect, Ref } from 'effect';
-import type { YoutubeVideo } from './youtube.types';
-import { youtubeFetcher } from './youtube.fetcher';
 import {
   YOUTUBE_MAX_RESULTS_NB,
   YOUTUBE_REGION_CODE_FR
 } from './youtube.constants';
+import { youtubeInfinitePaginatedFetcher } from './youtube.fetcher';
+import type { YoutubeVideo } from './youtube.types';
 
 export class YoutubeAccessTokenRef extends Context.Tag('YoutubeAccessTokenRef')<
   YoutubeAccessTokenRef,
@@ -19,15 +19,13 @@ export class YoutubeService extends Effect.Service<YoutubeService>()(
   'YoutubeService',
   {
     accessors: true,
-    effect: Effect.gen(function* () {
-      return {
-        getVideos: youtubeFetcher<YoutubeVideo[]>('/videos', {
-          chart: 'mostPopular',
-          part: ['snippet', 'statistics'],
-          regionCode: YOUTUBE_REGION_CODE_FR,
-          maxResults: YOUTUBE_MAX_RESULTS_NB
-        })
-      };
+    effect: Effect.succeed({
+      getVideos: youtubeInfinitePaginatedFetcher<YoutubeVideo>('/videos', {
+        chart: 'mostPopular',
+        part: ['snippet', 'statistics'],
+        regionCode: YOUTUBE_REGION_CODE_FR,
+        maxResults: YOUTUBE_MAX_RESULTS_NB
+      })
     })
   }
 ) {}

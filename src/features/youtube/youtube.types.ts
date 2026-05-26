@@ -68,6 +68,7 @@ export type YoutubeQueryParams = Partial<{
   maxResults: number;
   chart: 'mostPopular' | (string & {});
   regionCode: typeof YOUTUBE_REGION_CODE_FR;
+  pageToken: string;
 }>;
 
 export type YoutubeRefreshTokenResponse = {

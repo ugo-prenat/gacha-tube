@@ -1,20 +1,21 @@
 import { Effect, Ref } from 'effect';
-import { YoutubeAccessTokenRef } from './youtube.service';
-import type {
-  YoutubeQueryParams,
-  YoutubeRefreshTokenResponse
-} from './youtube.types';
-import { buildYoutubeUrl } from './youtube.utils';
+import { YOUTUBE_REFRESH_TOKEN_URL } from './youtube.constants';
 import {
   YoutubeAPIError,
   YoutubeRefreshAccessTokenError,
   YoutubeUnauthorizedError
 } from './youtube.errors';
-import { YOUTUBE_REFRESH_TOKEN_URL } from './youtube.constants';
+import { YoutubeAccessTokenRef } from './youtube.service';
+import { buildYoutubeUrl } from './youtube.utils';
+import type {
+  PaginatedYoutubeResponse,
+  YoutubeQueryParams,
+  YoutubeRefreshTokenResponse
+} from './youtube.types';
 
 type Method = 'GET' | 'POST';
 
-type Input = string | { method: Method; url: string; body?: Object };
+type Input = string | { method: Method; url: string; body?: object };
 
 export const youtubeFetcher = <T>(
   input: Input,
@@ -29,6 +30,27 @@ export const youtubeFetcher = <T>(
         yield* refreshAccessToken;
         return yield* performFetch<T>(input, queryParams, true);
       })
+    )
+  );
+
+export const youtubeInfinitePaginatedFetcher = <T>(
+  input: Input,
+  queryParams?: YoutubeQueryParams,
+  prevItems: T[] = []
+): Effect.Effect<
+  T[],
+  YoutubeAPIError | YoutubeRefreshAccessTokenError | YoutubeUnauthorizedError,
+  YoutubeAccessTokenRef
+> =>
+  youtubeFetcher<PaginatedYoutubeResponse<T>>(input, queryParams).pipe(
+    Effect.flatMap(({ nextPageToken, items }) =>
+      nextPageToken
+        ? youtubeInfinitePaginatedFetcher<T>(
+            input,
+            { ...queryParams, pageToken: nextPageToken },
+            [...prevItems, ...items]
+          )
+        : Effect.succeed([...prevItems, ...items])
     )
   );
 
