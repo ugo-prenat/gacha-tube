@@ -14,7 +14,7 @@ export const Route = createRootRoute({
   head: () => ({
     meta: [
       { charSet: 'utf-8' },
-      { title: 'YouTube Gacha' },
+      { title: 'Gacha Tube' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' }
     ],
     links: [{ rel: 'stylesheet', href: appCss }]
