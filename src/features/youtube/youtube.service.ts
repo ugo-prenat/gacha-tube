@@ -1,19 +1,25 @@
-import { Context, Effect, Ref } from 'effect';
+import { Context, Effect, Layer, Ref } from 'effect';
 import {
   YOUTUBE_MAX_RESULTS_NB,
   YOUTUBE_REGION_CODE_FR
 } from './youtube.constants';
 import { youtubeInfinitePaginatedFetcher } from './youtube.fetcher';
 import type { YoutubeVideo } from './youtube.types';
+import { ConfigService } from '@/lib/config/config.service';
 
 export class YoutubeAccessTokenRef extends Context.Tag('YoutubeAccessTokenRef')<
   YoutubeAccessTokenRef,
   Ref.Ref<string>
->() {}
-
-export const initialYoutubeAccessTokenRef = Ref.make(
-  process.env.YOUTUBE_ACCESS_TOKEN!
-);
+>() {
+  static readonly Ref = Layer.effect(
+    YoutubeAccessTokenRef,
+    ConfigService.pipe(
+      Effect.flatMap(({ YOUTUBE_ACCESS_TOKEN }) =>
+        Ref.make(YOUTUBE_ACCESS_TOKEN)
+      )
+    )
+  );
+}
 
 export class YoutubeService extends Effect.Service<YoutubeService>()(
   'YoutubeService',

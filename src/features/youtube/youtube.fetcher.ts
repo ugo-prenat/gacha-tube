@@ -12,6 +12,7 @@ import type {
   YoutubeQueryParams,
   YoutubeRefreshTokenResponse
 } from './youtube.types';
+import { ConfigService } from '@/lib/config/config.service';
 
 type Method = 'GET' | 'POST';
 
@@ -40,7 +41,7 @@ export const youtubeInfinitePaginatedFetcher = <T>(
 ): Effect.Effect<
   T[],
   YoutubeAPIError | YoutubeRefreshAccessTokenError | YoutubeUnauthorizedError,
-  YoutubeAccessTokenRef
+  ConfigService | YoutubeAccessTokenRef
 > =>
   youtubeFetcher<PaginatedYoutubeResponse<T>>(input, queryParams).pipe(
     Effect.flatMap(({ nextPageToken, items }) =>
@@ -101,6 +102,7 @@ const performFetch = <T>(
   });
 
 const refreshAccessToken = Effect.gen(function* () {
+  const config = yield* ConfigService;
   const accessTokenRef = yield* YoutubeAccessTokenRef;
 
   const response = yield* Effect.tryPromise({
@@ -109,9 +111,9 @@ const refreshAccessToken = Effect.gen(function* () {
         method: 'POST',
         body: JSON.stringify({
           grant_type: 'refresh_token',
-          client_id: process.env.YOUTUBE_CLIENT_ID,
-          client_secret: process.env.YOUTUBE_CLIENT_SECRET,
-          refresh_token: process.env.YOUTUBE_REFRESH_TOKEN
+          client_id: config.YOUTUBE_CLIENT_ID,
+          client_secret: config.YOUTUBE_CLIENT_SECRET,
+          refresh_token: config.YOUTUBE_REFRESH_TOKEN
         })
       }),
     catch: (error) => {

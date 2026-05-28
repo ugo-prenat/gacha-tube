@@ -1,11 +1,8 @@
 import { createServerFn } from '@tanstack/react-start';
 import { Effect } from 'effect';
 import { youtubeVideosToCards } from '../cards/cards.utils';
-import {
-  YoutubeAccessTokenRef,
-  YoutubeService,
-  initialYoutubeAccessTokenRef
-} from './youtube.service';
+import { YoutubeAccessTokenRef, YoutubeService } from './youtube.service';
+import { ConfigService } from '@/lib/config/config.service';
 
 export const getYoutubeVideos = createServerFn().handler(async () => {
   const program = YoutubeService.getVideos.pipe(
@@ -25,10 +22,8 @@ export const getYoutubeVideos = createServerFn().handler(async () => {
 
   const runnable = program.pipe(
     Effect.provide(YoutubeService.Default),
-    Effect.provideServiceEffect(
-      YoutubeAccessTokenRef,
-      initialYoutubeAccessTokenRef
-    )
+    Effect.provide(YoutubeAccessTokenRef.Ref),
+    Effect.provide(ConfigService.Default)
   );
 
   return await Effect.runPromise(runnable);
