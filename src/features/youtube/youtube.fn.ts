@@ -1,25 +1,24 @@
 import { createServerFn } from '@tanstack/react-start';
 import { Effect } from 'effect';
+import { youtubeVideosToCards } from '../cards/cards.utils';
 import {
-  initialYoutubeAccessTokenRef,
   YoutubeAccessTokenRef,
-  YoutubeService
+  YoutubeService,
+  initialYoutubeAccessTokenRef
 } from './youtube.service';
 
 export const getYoutubeVideos = createServerFn().handler(async () => {
   const program = YoutubeService.getVideos.pipe(
+    Effect.flatMap(youtubeVideosToCards),
     Effect.catchTags({
-      YoutubeAPIError: (error) => {
-        console.error(error);
-        return Effect.succeed(['youtube api error']);
+      YoutubeAPIError: () => {
+        return Effect.fail('youtube api error');
       },
-      YoutubeRefreshAccessTokenError: (error) => {
-        console.error(error);
-        return Effect.succeed(['youtube refresh access token error']);
+      YoutubeUnauthorizedError: () => {
+        return Effect.fail('youtube unauthorized error');
       },
-      YoutubeUnauthorizedError: (error) => {
-        console.error(error);
-        return Effect.succeed(['youtube unauthorized error']);
+      YoutubeRefreshAccessTokenError: () => {
+        return Effect.fail('youtube refresh access token error');
       }
     })
   );
