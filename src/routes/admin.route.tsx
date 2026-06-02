@@ -1,8 +1,9 @@
-import { Button } from '@/components/ui/button';
-import type { Card } from '@/features/cards/cards.type';
-import { getYoutubeVideos } from '@/features/youtube/youtube.fn';
 import { createFileRoute } from '@tanstack/react-router';
 import { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import type { InsertCard } from '@/features/cards/cards.schemas';
+import { useTranslation } from '@/lib/i18n';
+import { insertCard, listCards } from '@/features/cards/cards.fn';
 
 export const Route = createFileRoute('/admin')({
   component: RouteComponent
@@ -12,15 +13,18 @@ const oauthUrl =
   'https://accounts.google.com/o/oauth2/v2/auth?client_id=736393765480-d5h5rl1oeq64jedmnvtvrv4002mlelu4.apps.googleusercontent.com&redirect_uri=http://localhost:3000/admin&response_type=token&scope=https://www.googleapis.com/auth/youtube.readonly';
 
 function RouteComponent() {
-  const [cards, setCards] = useState<Card[]>([]);
+  const t = useTranslation();
+  const [cards, setCards] = useState<InsertCard[]>([]);
 
-  const handleGetYoutubeVideos = () => getYoutubeVideos().then(setCards);
+  const handleInsertCard = () => insertCard().then(console.log);
+  const handleListCards = () => listCards().then(setCards);
 
   return (
     <div className="flex flex-col min-h-[calc(100svh-3.5rem)] p-6">
       <div className="flex flex-col gap-4">
         <div className="flex justify-between">
-          <Button onClick={handleGetYoutubeVideos}>Get Videos</Button>
+          <Button onClick={handleInsertCard}>insert card</Button>
+          <Button onClick={handleListCards}>list cards</Button>
           <Button asChild>
             <a href={oauthUrl}>OAuth</a>
           </Button>
@@ -41,6 +45,9 @@ function RouteComponent() {
               <div>
                 <p className="font-medium">{card.name}</p>
                 <p className="text-sm text-muted-foreground">{card.channel}</p>
+                <p className="text-sm text-muted-foreground">
+                  {t(`youtube.category.${card.categoryId}`)}
+                </p>
               </div>
             </div>
           ))}

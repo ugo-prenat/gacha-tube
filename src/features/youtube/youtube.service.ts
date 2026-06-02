@@ -25,13 +25,15 @@ export class YoutubeService extends Effect.Service<YoutubeService>()(
   'YoutubeService',
   {
     accessors: true,
-    effect: Effect.succeed({
-      getVideos: youtubeInfinitePaginatedFetcher<YoutubeVideo>('/videos', {
-        chart: 'mostPopular',
-        part: ['snippet', 'statistics'],
-        regionCode: YOUTUBE_REGION_CODE_FR,
-        maxResults: YOUTUBE_MAX_RESULTS_NB
-      })
+    effect: Effect.gen(function* () {
+      return {
+        getVideos: youtubeInfinitePaginatedFetcher<YoutubeVideo>('/videos', {
+          chart: 'mostPopular',
+          part: ['snippet', 'statistics'],
+          regionCode: YOUTUBE_REGION_CODE_FR,
+          maxResults: YOUTUBE_MAX_RESULTS_NB
+        })
+      };
     })
   }
 ) {}
