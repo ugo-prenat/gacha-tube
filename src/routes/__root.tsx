@@ -1,8 +1,10 @@
-import { HeadContent, Scripts, createRootRoute } from '@tanstack/react-router';
+import { HeadContent, Scripts, createRootRouteWithContext } from '@tanstack/react-router';
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools';
 import { TanStackDevtools } from '@tanstack/react-devtools';
 
 import appCss from '../styles.css?url';
+
+import type { QueryClient } from '@tanstack/react-query';
 
 import '@/lib/i18n/i18n.config';
 import { DEFAULT_LOCALE, LangProvider } from '@/lib/i18n';
@@ -10,7 +12,11 @@ import { Header } from '@/components/Header';
 import { ThemeProvider } from '@/lib/theme/theme.provider';
 import { TooltipProvider } from '@/components/ui/tooltip';
 
-export const Route = createRootRoute({
+interface RouterContext {
+  queryClient: QueryClient;
+}
+
+export const Route = createRootRouteWithContext<RouterContext>()({
   head: () => ({
     meta: [
       { charSet: 'utf-8' },

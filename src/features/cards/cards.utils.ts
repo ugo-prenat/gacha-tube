@@ -7,11 +7,20 @@ import {
 } from './cards.type';
 import type { Rarity } from './cards.type';
 import type { YoutubeVideo } from '../youtube/youtube.types';
-import type { InsertCard } from './cards.schemas';
+import type { Card, InsertCard } from './cards.schemas';
+
+export const groupCardsByCategory = (cards: Card[]) =>
+  cards.reduce<Record<string, Card[]>>(
+    (groups, card) => ({
+      ...groups,
+      [card.categoryId]: [...(groups[card.categoryId] || []), card]
+    }),
+    {}
+  );
 
 export const youtubeVideosToCards = (
-  youtubeVideos: Array<YoutubeVideo>
-): Effect.Effect<Array<InsertCard>> =>
+  youtubeVideos: YoutubeVideo[]
+): Effect.Effect<InsertCard[]> =>
   Effect.forEach(youtubeVideos, youtubeVideoToCard);
 
 export const youtubeVideoToCard = ({

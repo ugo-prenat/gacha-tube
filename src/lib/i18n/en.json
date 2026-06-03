@@ -4,6 +4,12 @@
   "lang": "Language",
   "lang.fr": "French",
   "lang.en": "English",
+
+  "rarity.common": "Common",
+  "rarity.rare": "Rare",
+  "rarity.unique": "Unique",
+  "rarity.collector": "Collector",
+
   "youtube.category.1": "Film & Animation",
   "youtube.category.2": "Autos & Vehicles",
   "youtube.category.10": "Music",
